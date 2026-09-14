@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  docs:
+    name: spec files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Required files exist and are non-empty
+        run: |
+          set -euo pipefail
+          for f in README.md SPEC.md CHECKLIST.md HSE-DISPATCH.md; do
+            test -f "$f"
+            test -s "$f"
+          done
+
+      - name: Required headings present
+        run: |
+          set -euo pipefail
+          grep -q "Recursive Challenge" README.md
+          grep -q "## 1. Recover" SPEC.md
+          grep -q "## Recover" CHECKLIST.md
+          grep -q "HSE dispatch map" HSE-DISPATCH.md
